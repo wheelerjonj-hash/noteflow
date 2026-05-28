@@ -171,6 +171,7 @@ export default function App() {
   const [titleVal, setTitleVal]           = useState("");
   const [keySaved, setKeySaved]           = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [recordError, setRecordError] = useState("");
 
   const wsRef          = useRef(null);
   const mediaRef       = useRef(null);
@@ -230,7 +231,7 @@ export default function App() {
 
     transcriptRef.current = "";
     setTranscript(""); setInterim(""); setElapsed(0);
-    setProcessing(false); setStreamText("");
+    setProcessing(false); setStreamText(""); setRecordError("");
 
     // Switch to record screen FIRST so user sees something immediately
     setRecording(true);
@@ -300,8 +301,7 @@ export default function App() {
 
       ws.onerror = (e) => {
         console.error("Deepgram WS error:", e);
-        // Don't crash - just show error in transcript area
-        setInterim("⚠️ Deepgram connection failed - check API key in Settings");
+        setRecordError("Deepgram connection failed. Check your API key in Settings.");
       };
 
       ws.onclose = (e) => {
@@ -311,7 +311,7 @@ export default function App() {
       };
     } catch (e) {
       console.error("WebSocket creation failed:", e);
-      setInterim("⚠️ Could not connect to Deepgram - check API key in Settings");
+      setRecordError("WebSocket failed: " + e.message);
     }
   }, [dgKey, cleanupRecording]);
 
@@ -574,7 +574,11 @@ export default function App() {
       {/* Live transcript */}
       <div style={{ flex: 1, overflowY: "auto", padding: "0 20px 16px" }}>
         <div style={{ fontSize: 10, color: "#cccccc", letterSpacing: "1px", fontWeight: 600, marginBottom: 10 }}>LIVE TRANSCRIPT</div>
-        {!transcript && !interim && recording && (
+        {recordError ? (
+          <div style={{ padding: "12px", borderRadius: 10, background: "rgba(255,80,80,0.15)", border: "1px solid rgba(255,80,80,0.4)", color: "#ff8080", fontSize: 13, lineHeight: 1.6 }}>
+            ⚠️ {recordError}
+          </div>
+        ) : !transcript && !interim && recording && (
           <div style={{ color: "#cccccc", fontSize: 14 }}>Listening — start speaking…</div>
         )}
         <div style={{ fontSize: 14, color: "#ffffff", lineHeight: 1.85, fontFamily: "'DM Mono', monospace", whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
