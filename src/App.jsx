@@ -265,23 +265,35 @@ export default function App() {
     if (!dgKey.trim()) return;
 
     try {
-      const ws = new WebSocket(
-        `wss://api.deepgram.com/v1/listen?model=nova-2&smart_format=true&punctuate=true&diarize=true&interim_results=true&language=en-US&filler_words=false`,
-        ["token", dgKey.trim()]
-      );
+      // Detect best supported format for this browser/device
+      const mimeType = [
+        "audio/webm;codecs=opus",
+        "audio/webm",
+        "audio/ogg;codecs=opus",
+        "audio/ogg",
+      ].find(t => MediaRecorder.isTypeSupported(t)) || "";
+
+      // Build Deepgram URL with encoding matching detected format
+      const encoding = mimeType.includes("ogg") ? "&encoding=ogg-opus" : "";
+      const dgUrl = `wss://api.deepgram.com/v1/listen?model=nova-2&smart_format=true&punctuate=true&diarize=true&interim_results=true&language=en-US&filler_words=false${encoding}`;
+
+      const ws = new WebSocket(dgUrl, ["token", dgKey.trim()]);
       wsRef.current = ws;
 
       ws.onopen = () => {
         try {
-          const mimeType = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
-            ? "audio/webm;codecs=opus" : "audio/webm";
-          const recorder = new MediaRecorder(stream, { mimeType });
+          const recorderOpts = mimeType ? { mimeType } : {};
+          const recorder = new MediaRecorder(stream, recorderOpts);
           recorder.ondataavailable = e => {
             if (ws.readyState === WebSocket.OPEN && e.data.size > 0) ws.send(e.data);
           };
-          recorder.start(200);
+          recorder.start(250);
           mediaRef.current._recorder = recorder;
-        } catch (e) { console.error("MediaRecorder error:", e); }
+          setInterim("🎙 Connected — start speaking...");
+          setTimeout(() => setInterim(""), 2000);
+        } catch (e) {
+          setRecordError("MediaRecorder failed: " + e.message);
+        }
       };
 
       ws.onmessage = msg => {
