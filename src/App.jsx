@@ -130,16 +130,16 @@ const TYPES = [
 ];
 
 const C = {
-  bg:      "#0f0d0a",
-  surface: "rgba(255,255,255,0.07)",
-  border:  "rgba(255,255,255,0.15)",
-  gold:    "#f0c060",
-  goldDim: "rgba(240,192,96,0.18)",
-  goldBorder: "rgba(240,192,96,0.5)",
-  text:    "#f5ede0",
-  muted:   "#b0a090",
-  dim:     "#7a6a58",
-  red:     "#ff4444",
+  bg:         "#1a1a1a",
+  surface:    "rgba(255,255,255,0.10)",
+  border:     "rgba(255,255,255,0.25)",
+  gold:       "#ffd060",
+  goldDim:    "rgba(255,208,96,0.20)",
+  goldBorder: "rgba(255,208,96,0.60)",
+  text:       "#ffffff",
+  muted:      "#cccccc",
+  dim:        "#999999",
+  red:        "#ff5555",
 };
 
 // ── Spinner ───────────────────────────────────────────────────────────────────
@@ -417,7 +417,7 @@ export default function App() {
       <div style={{ padding: "18px 20px 14px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div>
           <div style={{ fontSize: 24, fontWeight: 700, letterSpacing: "-0.6px", color: "#f0ede8", fontFamily: "'DM Sans', sans-serif" }}>NoteFlow</div>
-          <div style={{ fontSize: 11, color: "#9a8870", marginTop: 1, letterSpacing: "0.3px" }}>AI Meeting Notes · Anna Maria Island</div>
+          <div style={{ fontSize: 11, color: "#cccccc", marginTop: 1, letterSpacing: "0.3px" }}>AI Meeting Notes · Anna Maria Island</div>
         </div>
         <button onClick={() => { setKeyInput(dgKey); setScreen("settings"); }}
           style={{ ...btn(!dgKey), width: 40, height: 40, display: "flex", alignItems: "center", justifyContent: "center",
@@ -430,7 +430,7 @@ export default function App() {
 
       {/* Meeting type */}
       <div style={{ padding: "0 20px 14px" }}>
-        <div style={{ fontSize: 10, color: "#9a8870", letterSpacing: "1px", fontWeight: 600, marginBottom: 8 }}>MEETING TYPE</div>
+        <div style={{ fontSize: 10, color: "#cccccc", letterSpacing: "1px", fontWeight: 600, marginBottom: 8 }}>MEETING TYPE</div>
         <div style={{ display: "flex", gap: 8 }}>
           {TYPES.map(({ id, label, Icon }) => (
             <button key={id} onClick={() => setMeetingType(id)}
@@ -463,7 +463,7 @@ export default function App() {
           <>
             <textarea value={pasteText} onChange={e => setPasteText(e.target.value)}
               placeholder="Paste your transcript here…"
-              style={{ width: "100%", height: 90, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 10, padding: "10px 12px", color: "#f5ede0", fontSize: 13, fontFamily: "'DM Mono', monospace", resize: "none", lineHeight: 1.6, marginBottom: 8 }} />
+              style={{ width: "100%", height: 90, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 10, padding: "10px 12px", color: "#ffffff", fontSize: 13, fontFamily: "'DM Mono', monospace", resize: "none", lineHeight: 1.6, marginBottom: 8 }} />
             <button onClick={submitPaste} disabled={!pasteText.trim()} style={goldBtn(!pasteText.trim())}>
               <Icons.Sparkle /> Analyze with AI
             </button>
@@ -473,14 +473,14 @@ export default function App() {
 
       {/* Meetings list */}
       <div style={{ flex: 1, overflowY: "auto", borderTop: `1px solid ${C.border}` }}>
-        <div style={{ padding: "12px 20px 6px", fontSize: 10, color: "#9a8870", letterSpacing: "1px", fontWeight: 600 }}>
+        <div style={{ padding: "12px 20px 6px", fontSize: 10, color: "#cccccc", letterSpacing: "1px", fontWeight: 600 }}>
           RECENT MEETINGS {!loading && meetings.length > 0 && `(${meetings.length})`}
         </div>
 
         {loading ? (
           <div style={{ padding: "24px", display: "flex", justifyContent: "center" }}><Spinner /></div>
         ) : meetings.length === 0 ? (
-          <div style={{ padding: "24px 20px", color: "#9a8870", fontSize: 13, textAlign: "center", lineHeight: 1.8 }}>
+          <div style={{ padding: "24px 20px", color: "#bbbbbb", fontSize: 13, textAlign: "center", lineHeight: 1.8 }}>
             No meetings yet.<br />Record your first meeting above.
           </div>
         ) : meetings.map(m => (
@@ -489,12 +489,12 @@ export default function App() {
             onTouchStart={e => e.currentTarget.style.background = "rgba(255,255,255,0.03)"}
             onTouchEnd={e => e.currentTarget.style.background = "transparent"}>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 14, fontWeight: 500, color: "#f0e8d8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 4 }}>{m.title}</div>
-              <div style={{ display: "flex", gap: 8, fontSize: 11, color: "#9a8870", flexWrap: "wrap" }}>
+              <div style={{ fontSize: 14, fontWeight: 500, color: "#ffffff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 4 }}>{m.title}</div>
+              <div style={{ display: "flex", gap: 8, fontSize: 11, color: "#cccccc", flexWrap: "wrap" }}>
                 <span>{fmt.date(m.created_at)}</span>
                 {m.duration_seconds > 0 && <span>· {fmt.dur(m.duration_seconds)}</span>}
                 {m.action_items?.length > 0 && <span>· {m.action_items.length} actions</span>}
-                <span style={{ color: "#9a8870", opacity: 0.7 }}>· {TYPES.find(t => t.id === m.meeting_type)?.label || "Meeting"}</span>
+                <span style={{ color: "#bbbbbb", opacity: 0.7 }}>· {TYPES.find(t => t.id === m.meeting_type)?.label || "Meeting"}</span>
               </div>
             </div>
             <Icons.Chevron />
@@ -509,7 +509,7 @@ export default function App() {
     <div style={{ display: "flex", flexDirection: "column", height: "100%", animation: "slideIn 0.2s ease" }}>
       <div style={{ padding: "16px 20px", display: "flex", alignItems: "center", gap: 8 }}>
         <button onClick={() => { if (recording) stopRecording(); else setScreen("home"); }}
-          style={{ background: "none", border: "none", color: "#c8b8a0", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, fontSize: 13, padding: "4px 0" }}>
+          style={{ background: "none", border: "none", color: "#ffffff", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, fontSize: 13, padding: "4px 0" }}>
           <Icons.Back /> {recording ? "Stop & Save" : "Back"}
         </button>
         {recording && (
@@ -522,10 +522,10 @@ export default function App() {
 
       {/* Timer */}
       <div style={{ textAlign: "center", padding: "12px 20px 8px" }}>
-        <div style={{ fontSize: 56, fontFamily: "'DM Mono', monospace", fontWeight: 300, letterSpacing: "-2px", color: recording ? "#ffe080" : C.muted, lineHeight: 1 }}>
+        <div style={{ fontSize: 56, fontFamily: "'DM Mono', monospace", fontWeight: 300, letterSpacing: "-2px", color: recording ? "#ffd060" : "#aaaaaa", lineHeight: 1 }}>
           {fmt.dur(elapsed)}
         </div>
-        <div style={{ fontSize: 11, color: "#9a8870", marginTop: 6, letterSpacing: "0.8px" }}>
+        <div style={{ fontSize: 11, color: "#cccccc", marginTop: 6, letterSpacing: "0.8px" }}>
           {TYPES.find(t => t.id === meetingType)?.label.toUpperCase()} {recording ? "· RECORDING" : "· STOPPED"}
         </div>
       </div>
@@ -543,11 +543,11 @@ export default function App() {
 
       {/* Live transcript */}
       <div style={{ flex: 1, overflowY: "auto", padding: "0 20px 16px" }}>
-        <div style={{ fontSize: 10, color: "#9a8870", letterSpacing: "1px", fontWeight: 600, marginBottom: 10 }}>LIVE TRANSCRIPT</div>
+        <div style={{ fontSize: 10, color: "#cccccc", letterSpacing: "1px", fontWeight: 600, marginBottom: 10 }}>LIVE TRANSCRIPT</div>
         {!transcript && !interim && recording && (
-          <div style={{ color: "#9a8870", fontSize: 14 }}>Listening — start speaking…</div>
+          <div style={{ color: "#cccccc", fontSize: 14 }}>Listening — start speaking…</div>
         )}
-        <div style={{ fontSize: 14, color: "#d0c0a8", lineHeight: 1.85, fontFamily: "'DM Mono', monospace", whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+        <div style={{ fontSize: 14, color: "#ffffff", lineHeight: 1.85, fontFamily: "'DM Mono', monospace", whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
           {transcript}
           <span style={{ color: C.gold, opacity: 0.6 }}>{interim}</span>
           {recording && <span style={{ display: "inline-block", width: 2, height: 14, background: C.gold, marginLeft: 3, animation: "blink 1s step-end infinite", verticalAlign: "middle" }} />}
@@ -587,7 +587,7 @@ export default function App() {
         {/* Header */}
         <div style={{ padding: "14px 16px 10px", borderBottom: `1px solid ${C.border}`, flexShrink: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 5 }}>
-            <button onClick={() => setScreen("home")} style={{ background: "none", border: "none", color: "#c8b8a0", cursor: "pointer", padding: "3px 6px 3px 0" }}>
+            <button onClick={() => setScreen("home")} style={{ background: "none", border: "none", color: "#ffffff", cursor: "pointer", padding: "3px 6px 3px 0" }}>
               <Icons.Back />
             </button>
             {editingTitle ? (
@@ -596,18 +596,18 @@ export default function App() {
                 style={{ flex: 1, background: "rgba(255,255,255,0.05)", border: `1px solid ${C.goldBorder}`, borderRadius: 7, padding: "5px 8px", color: "#f0ede8", fontFamily: "inherit", fontSize: 15, fontWeight: 600 }} />
             ) : (
               <div onClick={() => { if (!processing) { setTitleVal(m.title); setEditingTitle(true); setTimeout(() => titleInputRef.current?.focus(), 40); } }}
-                style={{ flex: 1, fontSize: 15, fontWeight: 600, color: "#f5ede0", letterSpacing: "-0.3px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", cursor: processing ? "default" : "text" }}>
+                style={{ flex: 1, fontSize: 15, fontWeight: 600, color: "#ffffff", letterSpacing: "-0.3px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", cursor: processing ? "default" : "text" }}>
                 {m.title}
               </div>
             )}
             <button onClick={copyMeeting} style={{ background: "none", border: "none", color: copied ? "#4ade80" : C.muted, cursor: "pointer", padding: "3px" }}>
               {copied ? <Icons.Check /> : <Icons.Copy />}
             </button>
-            <button onClick={() => setDeleteConfirm(m.id)} style={{ background: "none", border: "none", color: "#c8b8a0", cursor: "pointer", padding: "3px" }}>
+            <button onClick={() => setDeleteConfirm(m.id)} style={{ background: "none", border: "none", color: "#ffffff", cursor: "pointer", padding: "3px" }}>
               <Icons.Trash />
             </button>
           </div>
-          <div style={{ fontSize: 11, color: "#9a8870", paddingLeft: 28, display: "flex", gap: 8, flexWrap: "wrap" }}>
+          <div style={{ fontSize: 11, color: "#cccccc", paddingLeft: 28, display: "flex", gap: 8, flexWrap: "wrap" }}>
             <span>{fmt.date(m.created_at)} · {fmt.time(m.created_at)}</span>
             {m.duration_seconds > 0 && <span>· {fmt.dur(m.duration_seconds)}</span>}
             <span>· {TYPES.find(t => t.id === m.meeting_type)?.label}</span>
@@ -640,14 +640,14 @@ export default function App() {
             <div>
               {m.speakers?.length > 1 && (
                 <div style={{ marginBottom: 16, padding: "10px 12px", borderRadius: 10, background: C.goldDim, border: `1px solid ${C.goldBorder}` }}>
-                  <div style={{ fontSize: 10, color: "#9a8870", letterSpacing: "1px", fontWeight: 600, marginBottom: 6 }}>SPEAKERS DETECTED</div>
+                  <div style={{ fontSize: 10, color: "#cccccc", letterSpacing: "1px", fontWeight: 600, marginBottom: 6 }}>SPEAKERS DETECTED</div>
                   <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                     {m.speakers.map((s, i) => <span key={i} style={{ fontSize: 12, padding: "3px 8px", borderRadius: 6, background: "rgba(201,168,76,0.15)", color: C.gold }}>{s}</span>)}
                   </div>
                 </div>
               )}
-              <div style={{ fontSize: 10, color: "#9a8870", letterSpacing: "1px", fontWeight: 600, marginBottom: 10 }}>EXECUTIVE SUMMARY</div>
-              <div style={{ fontSize: 15, color: "#e8d8c0", lineHeight: 1.78 }}>
+              <div style={{ fontSize: 10, color: "#cccccc", letterSpacing: "1px", fontWeight: 600, marginBottom: 10 }}>EXECUTIVE SUMMARY</div>
+              <div style={{ fontSize: 15, color: "#ffffff", lineHeight: 1.78 }}>
                 {m.summary || (processing ? "Generating summary…" : "No summary available.")}
               </div>
             </div>
@@ -655,13 +655,13 @@ export default function App() {
 
           {tab === "actions" && (
             <div>
-              <div style={{ fontSize: 10, color: "#9a8870", letterSpacing: "1px", fontWeight: 600, marginBottom: 12 }}>ACTION ITEMS</div>
+              <div style={{ fontSize: 10, color: "#cccccc", letterSpacing: "1px", fontWeight: 600, marginBottom: 12 }}>ACTION ITEMS</div>
               {!m.action_items?.length ? (
-                <div style={{ color: "#9a8870", fontSize: 14 }}>{processing ? "Extracting actions…" : "No action items detected."}</div>
+                <div style={{ color: "#bbbbbb", fontSize: 14 }}>{processing ? "Extracting actions…" : "No action items detected."}</div>
               ) : m.action_items.map((a, i) => (
                 <div key={i} style={{ display: "flex", gap: 10, padding: "12px", borderRadius: 10, background: C.goldDim, border: `1px solid ${C.goldBorder}`, marginBottom: 8, animation: `fadeUp 0.2s ${i * 0.05}s both` }}>
                   <div style={{ width: 18, height: 18, borderRadius: 5, border: `1.5px solid rgba(180,151,90,0.5)`, flexShrink: 0, marginTop: 1 }} />
-                  <div style={{ fontSize: 14, color: "#e8d8c0", lineHeight: 1.55 }}>{a}</div>
+                  <div style={{ fontSize: 14, color: "#ffffff", lineHeight: 1.55 }}>{a}</div>
                 </div>
               ))}
             </div>
@@ -669,13 +669,13 @@ export default function App() {
 
           {tab === "insights" && (
             <div>
-              <div style={{ fontSize: 10, color: "#9a8870", letterSpacing: "1px", fontWeight: 600, marginBottom: 12 }}>KEY INSIGHTS</div>
+              <div style={{ fontSize: 10, color: "#cccccc", letterSpacing: "1px", fontWeight: 600, marginBottom: 12 }}>KEY INSIGHTS</div>
               {!m.insights?.length ? (
-                <div style={{ color: "#9a8870", fontSize: 14 }}>{processing ? "Extracting insights…" : "No insights extracted."}</div>
+                <div style={{ color: "#bbbbbb", fontSize: 14 }}>{processing ? "Extracting insights…" : "No insights extracted."}</div>
               ) : m.insights.map((ins, i) => (
                 <div key={i} style={{ display: "flex", gap: 10, padding: "12px", borderRadius: 10, background: C.surface, border: `1px solid ${C.border}`, marginBottom: 8, animation: `fadeUp 0.2s ${i * 0.05}s both` }}>
                   <span style={{ fontSize: 16, flexShrink: 0 }}>💡</span>
-                  <div style={{ fontSize: 14, color: "#e8d8c0", lineHeight: 1.55 }}>{ins}</div>
+                  <div style={{ fontSize: 14, color: "#ffffff", lineHeight: 1.55 }}>{ins}</div>
                 </div>
               ))}
             </div>
@@ -683,7 +683,7 @@ export default function App() {
 
           {tab === "transcript" && (
             <div>
-              <div style={{ fontSize: 10, color: "#9a8870", letterSpacing: "1px", fontWeight: 600, marginBottom: 12 }}>FULL TRANSCRIPT</div>
+              <div style={{ fontSize: 10, color: "#cccccc", letterSpacing: "1px", fontWeight: 600, marginBottom: 12 }}>FULL TRANSCRIPT</div>
               <div style={{ fontSize: 13, color: "#b0a080", lineHeight: 1.9, fontFamily: "'DM Mono', monospace", whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
                 {m.transcript || "No transcript available."}
               </div>
@@ -697,7 +697,7 @@ export default function App() {
             onClick={() => setDeleteConfirm(null)}>
             <div style={{ width: "100%", background: "#1a1510", borderRadius: "16px 16px 0 0", padding: "24px 20px 36px" }}
               onClick={e => e.stopPropagation()}>
-              <div style={{ fontSize: 16, fontWeight: 600, color: "#f5ede0", marginBottom: 8 }}>Delete this meeting?</div>
+              <div style={{ fontSize: 16, fontWeight: 600, color: "#ffffff", marginBottom: 8 }}>Delete this meeting?</div>
               <div style={{ fontSize: 13, color: "#c8b8a0", marginBottom: 20 }}>This will permanently remove the recording and all notes from Supabase.</div>
               <div style={{ display: "flex", gap: 10 }}>
                 <button onClick={() => setDeleteConfirm(null)} style={{ ...btn(false), flex: 1, padding: "12px", fontSize: 14, fontWeight: 500 }}>Cancel</button>
@@ -714,19 +714,19 @@ export default function App() {
   const SettingsScreen = () => (
     <div style={{ display: "flex", flexDirection: "column", height: "100%", padding: "20px", animation: "fadeUp 0.2s ease" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 24 }}>
-        <button onClick={() => setScreen("home")} style={{ background: "none", border: "none", color: "#c8b8a0", cursor: "pointer" }}><Icons.Back /></button>
-        <div style={{ fontSize: 18, fontWeight: 600, color: "#f5ede0" }}>Settings</div>
+        <button onClick={() => setScreen("home")} style={{ background: "none", border: "none", color: "#ffffff", cursor: "pointer" }}><Icons.Back /></button>
+        <div style={{ fontSize: 18, fontWeight: 600, color: "#ffffff" }}>Settings</div>
       </div>
 
-      <div style={{ fontSize: 10, color: "#9a8870", letterSpacing: "1px", fontWeight: 600, marginBottom: 10 }}>DEEPGRAM API KEY</div>
-      <div style={{ fontSize: 13, color: "#9a8870", lineHeight: 1.65, marginBottom: 14 }}>
+      <div style={{ fontSize: 10, color: "#cccccc", letterSpacing: "1px", fontWeight: 600, marginBottom: 10 }}>DEEPGRAM API KEY</div>
+      <div style={{ fontSize: 13, color: "#bbbbbb", lineHeight: 1.65, marginBottom: 14 }}>
         Required for live transcription. Free account at{" "}
         <a href="https://deepgram.com" target="_blank" rel="noreferrer" style={{ color: C.gold, textDecoration: "none" }}>deepgram.com</a>
         {" "}— includes $200 free credits (~45,000 min).
       </div>
       <input value={keyInput} onChange={e => setKeyInput(e.target.value)} type="password"
         placeholder="Paste your Deepgram API key…"
-        style={{ width: "100%", padding: "13px 14px", borderRadius: 10, border: `1px solid ${keyInput ? C.goldBorder : C.border}`, background: C.surface, color: "#f5ede0", fontFamily: "'DM Mono', monospace", fontSize: 13, marginBottom: 10 }} />
+        style={{ width: "100%", padding: "13px 14px", borderRadius: 10, border: `1px solid ${keyInput ? C.goldBorder : C.border}`, background: C.surface, color: "#ffffff", fontFamily: "'DM Mono', monospace", fontSize: 13, marginBottom: 10 }} />
       <button onClick={saveKey} disabled={!keyInput.trim()} style={goldBtn(!keyInput.trim())}>
         {keySaved ? <><Icons.Check /> Saved!</> : <><Icons.Check /> Save Key</>}
       </button>
@@ -738,8 +738,8 @@ export default function App() {
       )}
 
       <div style={{ marginTop: 28, padding: "14px", borderRadius: 10, background: C.surface, border: `1px solid ${C.border}` }}>
-        <div style={{ fontSize: 10, color: "#9a8870", letterSpacing: "1px", fontWeight: 600, marginBottom: 8 }}>STACK</div>
-        <div style={{ fontSize: 12, color: "#9a8870", lineHeight: 1.8 }}>
+        <div style={{ fontSize: 10, color: "#cccccc", letterSpacing: "1px", fontWeight: 600, marginBottom: 8 }}>STACK</div>
+        <div style={{ fontSize: 12, color: "#bbbbbb", lineHeight: 1.8 }}>
           🎙 Deepgram Nova-2 — real-time transcription + speaker diarization<br />
           🤖 Claude Sonnet — summaries, actions, insights<br />
           🗄 Supabase beach-life-ops — persistent meeting storage<br />
@@ -754,7 +754,7 @@ export default function App() {
     <div style={{
       width: "100%", maxWidth: 430, margin: "0 auto",
       height: "100vh", height: "100dvh",
-      background: C.bg, color: "#f5ede0",
+      background: "#1a1a1a", color: "#ffffff",
       fontFamily: "'DM Sans', system-ui, sans-serif",
       display: "flex", flexDirection: "column",
       position: "relative", overflow: "hidden",
