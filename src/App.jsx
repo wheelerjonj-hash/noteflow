@@ -442,7 +442,7 @@ export default function App() {
 
   // ── HOME ──────────────────────────────────────────────────────────────────
   const HomeScreen = () => (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%", animation: "fadeUp 0.25s ease" }}>
+    <div style={{ display: "flex", flexDirection: "column", height: "100%",  }}>
       {/* Header */}
       <div style={{ padding: "18px 20px 14px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div>
@@ -536,7 +536,7 @@ export default function App() {
 
   // ── RECORD ────────────────────────────────────────────────────────────────
   const RecordScreen = () => (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%", animation: "slideIn 0.2s ease" }}>
+    <div style={{ display: "flex", flexDirection: "column", height: "100%",  }}>
       <div style={{ padding: "16px 20px", display: "flex", alignItems: "center", gap: 8 }}>
         <button onClick={() => { if (recording) stopRecording(); else setScreen("home"); }}
           style={{ background: "none", border: "none", color: "#ffffff", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, fontSize: 13, padding: "4px 0" }}>
@@ -617,7 +617,7 @@ export default function App() {
       ["transcript", "Transcript"],
     ];
     return (
-      <div style={{ display: "flex", flexDirection: "column", height: "100%", animation: "slideIn 0.2s ease" }}>
+      <div style={{ display: "flex", flexDirection: "column", height: "100%",  }}>
         {/* Header */}
         <div style={{ padding: "14px 16px 10px", borderBottom: `1px solid ${C.border}`, flexShrink: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 5 }}>
@@ -693,7 +693,7 @@ export default function App() {
               {!m.action_items?.length ? (
                 <div style={{ color: "#bbbbbb", fontSize: 14 }}>{processing ? "Extracting actions…" : "No action items detected."}</div>
               ) : m.action_items.map((a, i) => (
-                <div key={i} style={{ display: "flex", gap: 10, padding: "12px", borderRadius: 10, background: C.goldDim, border: `1px solid ${C.goldBorder}`, marginBottom: 8, animation: `fadeUp 0.2s ${i * 0.05}s both` }}>
+                <div key={i} style={{ display: "flex", gap: 10, padding: "12px", borderRadius: 10, background: C.goldDim, border: `1px solid ${C.goldBorder}`, marginBottom: 8,  }}>
                   <div style={{ width: 18, height: 18, borderRadius: 5, border: `1.5px solid rgba(180,151,90,0.5)`, flexShrink: 0, marginTop: 1 }} />
                   <div style={{ fontSize: 14, color: "#ffffff", lineHeight: 1.55 }}>{a}</div>
                 </div>
@@ -707,7 +707,7 @@ export default function App() {
               {!m.insights?.length ? (
                 <div style={{ color: "#bbbbbb", fontSize: 14 }}>{processing ? "Extracting insights…" : "No insights extracted."}</div>
               ) : m.insights.map((ins, i) => (
-                <div key={i} style={{ display: "flex", gap: 10, padding: "12px", borderRadius: 10, background: C.surface, border: `1px solid ${C.border}`, marginBottom: 8, animation: `fadeUp 0.2s ${i * 0.05}s both` }}>
+                <div key={i} style={{ display: "flex", gap: 10, padding: "12px", borderRadius: 10, background: C.surface, border: `1px solid ${C.border}`, marginBottom: 8,  }}>
                   <span style={{ fontSize: 16, flexShrink: 0 }}>💡</span>
                   <div style={{ fontSize: 14, color: "#ffffff", lineHeight: 1.55 }}>{ins}</div>
                 </div>
@@ -746,7 +746,7 @@ export default function App() {
 
   // ── SETTINGS ──────────────────────────────────────────────────────────────
   const SettingsScreen = () => (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%", padding: "20px", animation: "fadeUp 0.2s ease" }}>
+    <div style={{ display: "flex", flexDirection: "column", height: "100%", padding: "20px",  }}>
       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 24 }}>
         <button onClick={() => setScreen("home")} style={{ background: "none", border: "none", color: "#ffffff", cursor: "pointer" }}><Icons.Back /></button>
         <div style={{ fontSize: 18, fontWeight: 600, color: "#ffffff" }}>Settings</div>
@@ -795,13 +795,9 @@ export default function App() {
     }}>
       <style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap');`}</style>
 
-      {/* Subtle noise grain */}
-      <svg style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0.025, pointerEvents: "none", zIndex: 0 }}>
-        <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="4" stitchTiles="stitch" /><feColorMatrix type="saturate" values="0" /></filter>
-        <rect width="100%" height="100%" filter="url(#grain)" />
-      </svg>
 
-      <div style={{ flex: 1, overflowY: "auto", position: "relative", zIndex: 1 }}>
+
+      <div style={{ flex: 1, overflowY: "auto" }}>
         {screen === "home"     && <HomeScreen />}
         {screen === "record"   && <RecordScreen />}
         {screen === "meeting"  && <MeetingScreen />}
