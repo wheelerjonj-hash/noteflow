@@ -45,51 +45,23 @@ const sb = {
 
 // ── Claude API ────────────────────────────────────────────────────────────────
 async function analyzeWithClaude(transcript, onChunk, apiKey) {
-  const sys = `You are an expert meeting analyst for a vacation rental management and construction company on Anna Maria Island, FL (Beach Life Rentals and AMI Construction Group). Analyze the meeting transcript and return ONLY valid JSON with no markdown fences or extra text:
-{
-  "title": "concise 4-6 word meeting title",
-  "summary": "2-3 sentence executive summary of key discussion points",
-  "action_items": ["Owner/person: specific action item", ...],
-  "insights": ["key decision or notable insight", ...],
-  "speakers": ["Speaker 1", "Speaker 2", ...]
-}
-Be specific and business-focused. Identify action owners by name or role when mentioned.`;
-
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
+  // Call via Netlify function proxy to avoid CORS
+  const res = await fetch("/.netlify/functions/analyze", {
     method: "POST",
-    headers: { "Content-Type": "application/json", ...(apiKey ? { "x-api-key": apiKey } : {}) },
-    body: JSON.stringify({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 1000,
-      stream: true,
-      system: sys,
-      messages: [{ role: "user", content: `Transcript:\n${transcript}` }],
-    }),
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ transcript, apiKey }),
   });
 
-  if (!res.ok) throw new Error("Claude API error");
-
-  const reader = res.body.getReader();
-  const dec = new TextDecoder();
-  let full = "";
-
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    for (const line of dec.decode(value).split("\n")) {
-      if (!line.startsWith("data:")) continue;
-      const d = line.slice(5).trim();
-      if (d === "[DONE]") break;
-      try {
-        const delta = JSON.parse(d).delta?.text || "";
-        if (delta) { full += delta; onChunk(full); }
-      } catch { /* skip */ }
-    }
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error("Analysis failed: " + err);
   }
 
-  // Clean and parse
-  const cleaned = full.replace(/```json|```/g, "").trim();
-  return JSON.parse(cleaned);
+  const data = await res.json();
+  if (data.error) throw new Error(data.error);
+
+  onChunk(data.result);
+  return JSON.parse(data.result);
 }
 
 // ── Icons ─────────────────────────────────────────────────────────────────────
