@@ -180,6 +180,7 @@ export default function App() {
   const transcriptRef  = useRef("");
   const titleInputRef  = useRef(null);
   const transcriptEnd  = useRef(null);
+  const wakeLockRef    = useRef(null);
 
   // Load meetings on mount
   useEffect(() => {
@@ -271,6 +272,7 @@ export default function App() {
     };
 
     timerRef.current = setInterval(() => setElapsed(e => e + 1), 1000);
+    try { if (navigator.wakeLock) wakeLockRef.current = await navigator.wakeLock.request('screen'); } catch {}
     setRecording(true);
     setScreen("record");
   }, [dgKey]);
@@ -279,6 +281,7 @@ export default function App() {
     setRecording(false);
     clearInterval(timerRef.current);
     cancelAnimationFrame(animRef.current);
+    try { await wakeLockRef.current?.release(); wakeLockRef.current = null; } catch {}
 
     mediaRef.current?._recorder?.stop();
     wsRef.current?.close(); wsRef.current = null;
