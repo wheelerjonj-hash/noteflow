@@ -131,15 +131,15 @@ const TYPES = [
 
 const C = {
   bg:      "#0f0d0a",
-  surface: "rgba(255,255,255,0.03)",
-  border:  "rgba(255,255,255,0.06)",
-  gold:    "#c9a84c",
-  goldDim: "rgba(180,151,90,0.15)",
-  goldBorder: "rgba(180,151,90,0.3)",
-  text:    "#d4c4a8",
-  muted:   "#6b6459",
-  dim:     "#4a4035",
-  red:     "#dc2626",
+  surface: "rgba(255,255,255,0.07)",
+  border:  "rgba(255,255,255,0.15)",
+  gold:    "#f0c060",
+  goldDim: "rgba(240,192,96,0.18)",
+  goldBorder: "rgba(240,192,96,0.5)",
+  text:    "#f5ede0",
+  muted:   "#b0a090",
+  dim:     "#7a6a58",
+  red:     "#ff4444",
 };
 
 // ── Spinner ───────────────────────────────────────────────────────────────────
@@ -486,7 +486,7 @@ export default function App() {
             onTouchStart={e => e.currentTarget.style.background = "rgba(255,255,255,0.03)"}
             onTouchEnd={e => e.currentTarget.style.background = "transparent"}>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 14, fontWeight: 500, color: "#d4c4a8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 4 }}>{m.title}</div>
+              <div style={{ fontSize: 14, fontWeight: 500, color: "#f0e8d8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 4 }}>{m.title}</div>
               <div style={{ display: "flex", gap: 8, fontSize: 11, color: C.dim, flexWrap: "wrap" }}>
                 <span>{fmt.date(m.created_at)}</span>
                 {m.duration_seconds > 0 && <span>· {fmt.dur(m.duration_seconds)}</span>}
@@ -519,7 +519,7 @@ export default function App() {
 
       {/* Timer */}
       <div style={{ textAlign: "center", padding: "12px 20px 8px" }}>
-        <div style={{ fontSize: 56, fontFamily: "'DM Mono', monospace", fontWeight: 300, letterSpacing: "-2px", color: recording ? C.gold : C.dim, lineHeight: 1 }}>
+        <div style={{ fontSize: 56, fontFamily: "'DM Mono', monospace", fontWeight: 300, letterSpacing: "-2px", color: recording ? "#ffe080" : C.muted, lineHeight: 1 }}>
           {fmt.dur(elapsed)}
         </div>
         <div style={{ fontSize: 11, color: C.dim, marginTop: 6, letterSpacing: "0.8px" }}>
@@ -544,7 +544,7 @@ export default function App() {
         {!transcript && !interim && recording && (
           <div style={{ color: C.dim, fontSize: 14 }}>Listening — start speaking…</div>
         )}
-        <div style={{ fontSize: 14, color: "#8a7a62", lineHeight: 1.85, fontFamily: "'DM Mono', monospace", whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+        <div style={{ fontSize: 14, color: "#d0c0a8", lineHeight: 1.85, fontFamily: "'DM Mono', monospace", whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
           {transcript}
           <span style={{ color: C.gold, opacity: 0.6 }}>{interim}</span>
           {recording && <span style={{ display: "inline-block", width: 2, height: 14, background: C.gold, marginLeft: 3, animation: "blink 1s step-end infinite", verticalAlign: "middle" }} />}
@@ -593,7 +593,7 @@ export default function App() {
                 style={{ flex: 1, background: "rgba(255,255,255,0.05)", border: `1px solid ${C.goldBorder}`, borderRadius: 7, padding: "5px 8px", color: "#f0ede8", fontFamily: "inherit", fontSize: 15, fontWeight: 600 }} />
             ) : (
               <div onClick={() => { if (!processing) { setTitleVal(m.title); setEditingTitle(true); setTimeout(() => titleInputRef.current?.focus(), 40); } }}
-                style={{ flex: 1, fontSize: 15, fontWeight: 600, color: "#d4c4a8", letterSpacing: "-0.3px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", cursor: processing ? "default" : "text" }}>
+                style={{ flex: 1, fontSize: 15, fontWeight: 600, color: "#f5ede0", letterSpacing: "-0.3px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", cursor: processing ? "default" : "text" }}>
                 {m.title}
               </div>
             )}
@@ -644,7 +644,7 @@ export default function App() {
                 </div>
               )}
               <div style={{ fontSize: 10, color: C.dim, letterSpacing: "1px", fontWeight: 600, marginBottom: 10 }}>EXECUTIVE SUMMARY</div>
-              <div style={{ fontSize: 15, color: "#c8b99a", lineHeight: 1.78 }}>
+              <div style={{ fontSize: 15, color: "#e8d8c0", lineHeight: 1.78 }}>
                 {m.summary || (processing ? "Generating summary…" : "No summary available.")}
               </div>
             </div>
@@ -658,7 +658,7 @@ export default function App() {
               ) : m.action_items.map((a, i) => (
                 <div key={i} style={{ display: "flex", gap: 10, padding: "12px", borderRadius: 10, background: C.goldDim, border: `1px solid ${C.goldBorder}`, marginBottom: 8, animation: `fadeUp 0.2s ${i * 0.05}s both` }}>
                   <div style={{ width: 18, height: 18, borderRadius: 5, border: `1.5px solid rgba(180,151,90,0.5)`, flexShrink: 0, marginTop: 1 }} />
-                  <div style={{ fontSize: 14, color: "#c8b99a", lineHeight: 1.55 }}>{a}</div>
+                  <div style={{ fontSize: 14, color: "#e8d8c0", lineHeight: 1.55 }}>{a}</div>
                 </div>
               ))}
             </div>
@@ -672,7 +672,7 @@ export default function App() {
               ) : m.insights.map((ins, i) => (
                 <div key={i} style={{ display: "flex", gap: 10, padding: "12px", borderRadius: 10, background: C.surface, border: `1px solid ${C.border}`, marginBottom: 8, animation: `fadeUp 0.2s ${i * 0.05}s both` }}>
                   <span style={{ fontSize: 16, flexShrink: 0 }}>💡</span>
-                  <div style={{ fontSize: 14, color: "#c8b99a", lineHeight: 1.55 }}>{ins}</div>
+                  <div style={{ fontSize: 14, color: "#e8d8c0", lineHeight: 1.55 }}>{ins}</div>
                 </div>
               ))}
             </div>
@@ -681,7 +681,7 @@ export default function App() {
           {tab === "transcript" && (
             <div>
               <div style={{ fontSize: 10, color: C.dim, letterSpacing: "1px", fontWeight: 600, marginBottom: 12 }}>FULL TRANSCRIPT</div>
-              <div style={{ fontSize: 13, color: "#7a6a52", lineHeight: 1.9, fontFamily: "'DM Mono', monospace", whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+              <div style={{ fontSize: 13, color: "#b0a080", lineHeight: 1.9, fontFamily: "'DM Mono', monospace", whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
                 {m.transcript || "No transcript available."}
               </div>
             </div>
@@ -716,7 +716,7 @@ export default function App() {
       </div>
 
       <div style={{ fontSize: 10, color: C.dim, letterSpacing: "1px", fontWeight: 600, marginBottom: 10 }}>DEEPGRAM API KEY</div>
-      <div style={{ fontSize: 13, color: "#5a5040", lineHeight: 1.65, marginBottom: 14 }}>
+      <div style={{ fontSize: 13, color: "#9a8870", lineHeight: 1.65, marginBottom: 14 }}>
         Required for live transcription. Free account at{" "}
         <a href="https://deepgram.com" target="_blank" rel="noreferrer" style={{ color: C.gold, textDecoration: "none" }}>deepgram.com</a>
         {" "}— includes $200 free credits (~45,000 min).
