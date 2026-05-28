@@ -44,7 +44,7 @@ const sb = {
 };
 
 // ── Claude API ────────────────────────────────────────────────────────────────
-async function analyzeWithClaude(transcript, onChunk) {
+async function analyzeWithClaude(transcript, onChunk, apiKey) {
   const sys = `You are an expert meeting analyst for a vacation rental management and construction company on Anna Maria Island, FL (Beach Life Rentals and AMI Construction Group). Analyze the meeting transcript and return ONLY valid JSON with no markdown fences or extra text:
 {
   "title": "concise 4-6 word meeting title",
@@ -57,7 +57,7 @@ Be specific and business-focused. Identify action owners by name or role when me
 
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...(apiKey ? { "x-api-key": apiKey } : {}) },
     body: JSON.stringify({
       model: "claude-sonnet-4-20250514",
       max_tokens: 1000,
@@ -153,7 +153,9 @@ export default function App() {
   const [meetings, setMeetings]           = useState([]);
   const [activeMeeting, setActiveMeeting] = useState(null);
   const [dgKey, setDgKey]                 = useState(() => localStorage.getItem("dg_key") || "");
+  const [anthropicKey, setAnthropicKey]     = useState(() => localStorage.getItem("anthropic_key") || "");
   const [keyInput, setKeyInput]           = useState("");
+  const [anthropicInput, setAnthropicInput] = useState("");
   const [recording, setRecording]         = useState(false);
   const [elapsed, setElapsed]             = useState(0);
   const [transcript, setTranscript]       = useState("");
@@ -355,7 +357,7 @@ export default function App() {
 
     let parsed = {};
     try {
-      parsed = await analyzeWithClaude(text, chunk => setStreamText(chunk));
+      parsed = await analyzeWithClaude(text, chunk => setStreamText(chunk), anthropicKey);
     } catch (e) {
       parsed = {
         title: `Meeting – ${fmt.date(Date.now())}`,
@@ -428,7 +430,10 @@ export default function App() {
   const saveKey = () => {
     const k = keyInput.trim();
     localStorage.setItem("dg_key", k);
-    setDgKey(k); setKeySaved(true);
+    setDgKey(k);
+    const ak = anthropicInput.trim();
+    if (ak) { localStorage.setItem("anthropic_key", ak); setAnthropicKey(ak); }
+    setKeySaved(true);
     setTimeout(() => { setKeySaved(false); setScreen("home"); }, 800);
   };
 
@@ -461,7 +466,7 @@ export default function App() {
           <div style={{ fontSize: 24, fontWeight: 700, letterSpacing: "-0.6px", color: "#f0ede8", fontFamily: "'DM Sans', sans-serif" }}>NoteFlow</div>
           <div style={{ fontSize: 11, color: "#cccccc", marginTop: 1, letterSpacing: "0.3px" }}>AI Meeting Notes · Anna Maria Island</div>
         </div>
-        <button onClick={() => { setKeyInput(dgKey); setScreen("settings"); }}
+        <button onClick={() => { setKeyInput(dgKey); setAnthropicInput(anthropicKey); setScreen("settings"); }}
           style={{ ...btn(!dgKey), width: 40, height: 40, display: "flex", alignItems: "center", justifyContent: "center",
             background: dgKey ? "rgba(74,222,128,0.08)" : "rgba(239,68,68,0.12)",
             border: `1px solid ${dgKey ? "rgba(74,222,128,0.25)" : "rgba(239,68,68,0.3)"}`,
