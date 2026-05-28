@@ -213,6 +213,18 @@ export default function App() {
   }, [recording]);
 
   // ── Recording ──────────────────────────────────────────────────────────────
+  const cleanupRecording = useCallback(() => {
+    clearInterval(timerRef.current);
+    cancelAnimationFrame(animRef.current);
+    try { mediaRef.current?._recorder?.stop(); } catch {}
+    try { wsRef.current?.close(); } catch {}
+    wsRef.current = null;
+    try { mediaRef.current?.getTracks().forEach(t => t.stop()); } catch {}
+    mediaRef.current = null;
+    analyserRef.current = null;
+    try { wakeLockRef.current?.release(); wakeLockRef.current = null; } catch {}
+  }, []);
+
   const startRecording = useCallback(async () => {
     if (!dgKey) { setKeyInput(""); setScreen("settings"); return; }
 
@@ -220,78 +232,96 @@ export default function App() {
     setTranscript(""); setInterim(""); setElapsed(0);
     setProcessing(false); setStreamText("");
 
+    // Switch to record screen FIRST so user sees something immediately
+    setRecording(true);
+    setScreen("record");
+
+    // Request mic
     let stream;
     try {
       stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       mediaRef.current = stream;
-      const ctx = new AudioContext();
-      const src = ctx.createMediaStreamSource(stream);
-      const analyser = ctx.createAnalyser(); analyser.fftSize = 64;
-      src.connect(analyser); analyserRef.current = analyser;
+      try {
+        const ctx = new AudioContext();
+        const src = ctx.createMediaStreamSource(stream);
+        const analyser = ctx.createAnalyser(); analyser.fftSize = 64;
+        src.connect(analyser); analyserRef.current = analyser;
+      } catch { /* waveform optional */ }
     } catch {
+      setRecording(false);
+      setScreen("home");
       alert("Microphone access denied. Please allow microphone access and try again.");
       return;
     }
 
-    // Deepgram WebSocket
-    const ws = new WebSocket(
-      `wss://api.deepgram.com/v1/listen?model=nova-2&smart_format=true&punctuate=true&diarize=true&interim_results=true&language=en-US&filler_words=false`,
-      ["token", dgKey]
-    );
-    wsRef.current = ws;
-
-    ws.onopen = () => {
-      const mimeType = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
-        ? "audio/webm;codecs=opus" : "audio/webm";
-      const recorder = new MediaRecorder(stream, { mimeType });
-      recorder.ondataavailable = e => {
-        if (ws.readyState === WebSocket.OPEN && e.data.size > 0) ws.send(e.data);
-      };
-      recorder.start(200);
-      mediaRef.current._recorder = recorder;
-    };
-
-    ws.onmessage = msg => {
-      try {
-        const data = JSON.parse(msg.data);
-        const alt = data?.channel?.alternatives?.[0];
-        if (!alt?.transcript) return;
-        if (data.is_final) {
-          transcriptRef.current += alt.transcript + " ";
-          setTranscript(transcriptRef.current);
-          setInterim("");
-        } else {
-          setInterim(alt.transcript);
-        }
-      } catch { /* skip */ }
-    };
-
-    ws.onerror = () => {
-      alert("Deepgram connection failed. Please check your API key in Settings.");
-      stopRecording();
-    };
-
-    timerRef.current = setInterval(() => setElapsed(e => e + 1), 1000);
+    // Wake lock - keep screen on
     try { if (navigator.wakeLock) wakeLockRef.current = await navigator.wakeLock.request('screen'); } catch {}
-    setRecording(true);
-    setScreen("record");
-  }, [dgKey]);
+
+    // Start timer
+    timerRef.current = setInterval(() => setElapsed(e => e + 1), 1000);
+
+    // Deepgram WebSocket - only if key exists
+    if (!dgKey.trim()) return;
+
+    try {
+      const ws = new WebSocket(
+        `wss://api.deepgram.com/v1/listen?model=nova-2&smart_format=true&punctuate=true&diarize=true&interim_results=true&language=en-US&filler_words=false`,
+        ["token", dgKey.trim()]
+      );
+      wsRef.current = ws;
+
+      ws.onopen = () => {
+        try {
+          const mimeType = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
+            ? "audio/webm;codecs=opus" : "audio/webm";
+          const recorder = new MediaRecorder(stream, { mimeType });
+          recorder.ondataavailable = e => {
+            if (ws.readyState === WebSocket.OPEN && e.data.size > 0) ws.send(e.data);
+          };
+          recorder.start(200);
+          mediaRef.current._recorder = recorder;
+        } catch (e) { console.error("MediaRecorder error:", e); }
+      };
+
+      ws.onmessage = msg => {
+        try {
+          const data = JSON.parse(msg.data);
+          const alt = data?.channel?.alternatives?.[0];
+          if (!alt?.transcript) return;
+          if (data.is_final) {
+            transcriptRef.current += alt.transcript + " ";
+            setTranscript(t => transcriptRef.current);
+            setInterim("");
+          } else {
+            setInterim(alt.transcript);
+          }
+        } catch { /* skip */ }
+      };
+
+      ws.onerror = (e) => {
+        console.error("Deepgram WS error:", e);
+        // Don't crash - just show error in transcript area
+        setInterim("⚠️ Deepgram connection failed - check API key in Settings");
+      };
+
+      ws.onclose = (e) => {
+        if (e.code !== 1000) {
+          console.warn("WS closed unexpectedly:", e.code, e.reason);
+        }
+      };
+    } catch (e) {
+      console.error("WebSocket creation failed:", e);
+      setInterim("⚠️ Could not connect to Deepgram - check API key in Settings");
+    }
+  }, [dgKey, cleanupRecording]);
 
   const stopRecording = useCallback(async () => {
     setRecording(false);
-    clearInterval(timerRef.current);
-    cancelAnimationFrame(animRef.current);
-    try { await wakeLockRef.current?.release(); wakeLockRef.current = null; } catch {}
-
-    mediaRef.current?._recorder?.stop();
-    wsRef.current?.close(); wsRef.current = null;
-    mediaRef.current?.getTracks().forEach(t => t.stop()); mediaRef.current = null;
-    analyserRef.current = null;
-
+    cleanupRecording();
     const text = transcriptRef.current.trim();
     if (text) await processTranscript(text, elapsed);
     else setScreen("home");
-  }, [elapsed]);
+  }, [elapsed, cleanupRecording]);
 
   const processTranscript = async (text, dur) => {
     setProcessing(true);
