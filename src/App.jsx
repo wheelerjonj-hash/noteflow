@@ -784,9 +784,26 @@ export default function App() {
 
       {dgKey && (
         <div style={{ marginTop: 14, padding: "10px 13px", borderRadius: 10, background: "rgba(74,222,128,0.06)", border: "1px solid rgba(74,222,128,0.2)", display: "flex", alignItems: "center", gap: 8 }}>
-          <Icons.Check /> <span style={{ fontSize: 12, color: "#4ade80" }}>API key saved and active</span>
+          <Icons.Check /> <span style={{ fontSize: 12, color: "#4ade80" }}>Deepgram key saved</span>
         </div>
       )}
+
+      <div style={{ marginTop: 24 }}>
+        <div style={{ fontSize: 10, color: "#cccccc", letterSpacing: "1px", fontWeight: 600, marginBottom: 10 }}>ANTHROPIC API KEY</div>
+        <div style={{ fontSize: 13, color: "#bbbbbb", lineHeight: 1.65, marginBottom: 14 }}>
+          Required for AI summaries. Get one at{" "}
+          <a href="https://console.anthropic.com" target="_blank" rel="noreferrer" style={{ color: C.gold, textDecoration: "none" }}>console.anthropic.com</a>
+          {" "} then API Keys.
+        </div>
+        <input value={anthropicInput} onChange={e => setAnthropicInput(e.target.value)} type="password"
+          placeholder="sk-ant-..."
+          style={{ width: "100%", padding: "13px 14px", borderRadius: 10, border: "1px solid rgba(255,208,96,0.4)", background: C.surface, color: "#ffffff", fontFamily: "monospace", fontSize: 13, marginBottom: 10 }} />
+        {anthropicKey && (
+          <div style={{ padding: "10px 13px", borderRadius: 10, background: "rgba(74,222,128,0.06)", border: "1px solid rgba(74,222,128,0.2)", display: "flex", alignItems: "center", gap: 8 }}>
+            <Icons.Check /> <span style={{ fontSize: 12, color: "#4ade80" }}>Anthropic key saved</span>
+          </div>
+        )}
+      </div>
 
       <div style={{ marginTop: 28, padding: "14px", borderRadius: 10, background: C.surface, border: `1px solid ${C.border}` }}>
         <div style={{ fontSize: 10, color: "#cccccc", letterSpacing: "1px", fontWeight: 600, marginBottom: 8 }}>STACK</div>
