@@ -218,9 +218,35 @@ export default function App() {
     setScreen("record");
 
     // Request mic
+    // Audio constraints tuned per meeting mode
+    const audioConstraints = {
+      phone: {
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true,
+        channelCount: 1,
+        sampleRate: 16000,
+      },
+      "in-person": {
+        echoCancellation: false,
+        noiseSuppression: false,
+        autoGainControl: true,
+        channelCount: 1,
+      },
+      site: {
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true,
+        channelCount: 1,
+        sampleRate: 16000,
+      },
+    };
+
     let stream;
     try {
-      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      stream = await navigator.mediaDevices.getUserMedia({
+        audio: audioConstraints[meetingType] || audioConstraints["in-person"]
+      });
       mediaRef.current = stream;
       try {
         const ctx = new AudioContext();
@@ -253,9 +279,21 @@ export default function App() {
         "audio/ogg",
       ].find(t => MediaRecorder.isTypeSupported(t)) || "";
 
-      // Build Deepgram URL with encoding matching detected format
+      // Build Deepgram URL based on meeting type
       const encoding = mimeType.includes("ogg") ? "&encoding=ogg-opus" : "";
-      const dgUrl = `wss://api.deepgram.com/v1/listen?model=nova-2&smart_format=true&punctuate=true&diarize=true&interim_results=true&language=en-US&filler_words=false${encoding}`;
+      const baseParams = `model=nova-2&smart_format=true&punctuate=true&interim_results=true&language=en-US&filler_words=false${encoding}`;
+
+      const modeParams = {
+        // Phone call: single speaker, no diarization, noise suppression for close mic
+        phone: `${baseParams}&diarize=false&channels=1`,
+        // In-person: full diarization for multiple speakers, stereo
+        "in-person": `${baseParams}&diarize=true&multichannel=false`,
+        // Site walkthrough: max noise suppression, single speaker (you talking),
+        // utterance detection to handle pauses while moving around
+        site: `${baseParams}&diarize=false&utterances=true&utt_split=1.5`,
+      };
+
+      const dgUrl = `wss://api.deepgram.com/v1/listen?${modeParams[meetingType] || modeParams["in-person"]}`;
 
       const ws = new WebSocket(dgUrl, ["token", dgKey.trim()]);
       wsRef.current = ws;
@@ -574,7 +612,14 @@ export default function App() {
             ⚠️ {recordError}
           </div>
         ) : !transcript && !interim && recording && (
-          <div style={{ color: "#cccccc", fontSize: 14 }}>Listening — start speaking…</div>
+          <div>
+            <div style={{ color: "#cccccc", fontSize: 14, marginBottom: 10 }}>Listening — start speaking…</div>
+            <div style={{ color: "#888888", fontSize: 12, lineHeight: 1.7, padding: "10px 12px", borderRadius: 8, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
+              {meetingType === "phone" && "📞 Phone mode — echo cancellation on. Put call on speaker for best results."}
+              {meetingType === "in-person" && "👥 In-Person mode — speaker diarization on. Place phone center of table."}
+              {meetingType === "site" && "🏗️ Site mode — max noise suppression. Hold phone close when speaking."}
+            </div>
+          </div>
         )}
         <div style={{ fontSize: 14, color: "#ffffff", lineHeight: 1.85, fontFamily: "'DM Mono', monospace", whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
           {transcript}
