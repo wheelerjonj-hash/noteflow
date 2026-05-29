@@ -45,12 +45,18 @@ const sb = {
 
 // ── Claude API ────────────────────────────────────────────────────────────────
 async function analyzeWithClaude(transcript, onChunk, apiKey) {
-  // Call via Netlify function proxy to avoid CORS
-  const res = await fetch("/.netlify/functions/analyze", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ transcript, apiKey }),
-  });
+  // Call via Supabase Edge Function proxy to avoid CORS
+  const res = await fetch(
+    "https://loempsuntceusydhseri.supabase.co/functions/v1/analyze-meeting",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxvZW1wc3VudGNldXN5ZGhzZXJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2NzkyNzUsImV4cCI6MjA5NDI1NTI3NX0.0u_S82sxLaJwYhP6A0HRgd2Rv49jHRtbn-b6AQNdanE",
+      },
+      body: JSON.stringify({ transcript, apiKey }),
+    }
+  );
 
   if (!res.ok) {
     const err = await res.text();
