@@ -793,7 +793,7 @@ export default function App() {
   return (
     <div style={{
       width: "100%", maxWidth: 430, margin: "0 auto",
-      height: "100vh", height: "100dvh",
+      height: "100dvh",
       background: "#1a1a1a", color: "#ffffff",
       fontFamily: "'DM Sans', system-ui, sans-serif",
       display: "flex", flexDirection: "column",
