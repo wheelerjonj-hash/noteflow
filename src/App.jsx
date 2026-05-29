@@ -54,7 +54,7 @@ async function analyzeWithClaude(transcript, onChunk, apiKey) {
         "Content-Type": "application/json",
         "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxvZW1wc3VudGNldXN5ZGhzZXJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2NzkyNzUsImV4cCI6MjA5NDI1NTI3NX0.0u_S82sxLaJwYhP6A0HRgd2Rv49jHRtbn-b6AQNdanE",
       },
-      body: JSON.stringify({ transcript, apiKey }),
+      body: JSON.stringify({ transcript }),
     }
   );
 
@@ -339,7 +339,7 @@ export default function App() {
     } catch (e) {
       parsed = {
         title: `Meeting – ${fmt.date(Date.now())}`,
-        summary: "Analysis failed. Please check your Anthropic API connection.",
+        summary: `Analysis failed: ${e.message}`,
         action_items: [], insights: [], speakers: [],
       };
     }
